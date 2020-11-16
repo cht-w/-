@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>js实现瀑布流</title>
+</head>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        position: relative;
+    }
+    #box {
+        width: 1200px;
+        margin: 0 auto;
+    }
+    .item {
+        position: absolute;
+        box-shadow: 3px 2px 2px #ccc;
+    }
+    img {
+        width: 200px;
+        display: block;
+    }
+</style>
+<body>
+    <div id="box">
+        <div class="item">
+            <img src="./img/01.jpg" alt="">
+        </div>
+        <div class="item">
+            <img src="./img/02.jpg" alt="">
+        </div>
+        <div class="item">
+            <img src="./img/03.jpg" alt="">
+        </div>
+        <div class="item">
+            <img src="./img/04.jpg" alt="">
+        </div>
+        <div class="item">
+            <img src="./img/05.jpg" alt="">
+        </div>
+        <div class="item">
+            <img src="./img/06.jpg" alt="">
+        </div>
+        <div class="item">
+            <img src="./img/07.jpg" alt="">
+        </div>
+        <div class="item">
+            <img src="./img/08.jpg" alt="">
+        </div>
+        <div class="item">
+            <img src="./img/09.jpg" alt="">
+        </div>
+        <div class="item">
+            <img src="./img/10.jpg" alt="">
+        </div>
+        <div class="item">
+            <img src="./img/11.jpg" alt="">
+        </div>
+        <div class="item">
+            <img src="./img/12.jpg" alt="">
+        </div>
+        <div class="item">
+            <img src="./img/13.jpg" alt="">
+        </div>
+        <div class="item">
+            <img src="./img/01.jpg" alt="">
+        </div>
+        <div class="item">
+            <img src="./img/02.jpg" alt="">
+        </div>
+        <div class="item">
+            <img src="./img/03.jpg" alt="">
+        </div>
+        <div class="item">
+            <img src="./img/04.jpg" alt="">
+        </div>
+        <div class="item">
+            <img src="./img/05.jpg" alt="">
+        </div>
+        <div class="item">
+            <img src="./img/06.jpg" alt="">
+        </div>
+        <div class="item">
+            <img src="./img/07.jpg" alt="">
+        </div>
+        <div class="item">
+            <img src="./img/08.jpg" alt="">
+        </div>
+        <div class="item">
+            <img src="./img/09.jpg" alt="">
+        </div>
+        <div class="item">
+            <img src="./img/10.jpg" alt="">
+        </div>
+        <div class="item">
+            <img src="./img/11.jpg" alt="">
+        </div>
+        <div class="item">
+            <img src="./img/12.jpg" alt="">
+        </div>
+        <div class="item">
+            <img src="./img/13.jpg" alt="">
+        </div>
+    </div>
+    <script>
+        let box = document.getElementById("box");
+        let items = box.children;
+        // 定义每列之间的间隙  10像素
+        let gap = 10 ;
+        window.onload = function () {
+            waterFall();
+
+            function waterFall() {
+                // 计算列数 = 页面大的款第 / 图片的宽度
+                let  pageWidth = getClient().width ;
+                let itemWidth = items[0].offsetWidth;
+                let columns = parseInt( pageWidth / (itemWidth + gap));
+                console.log(columns);
+                let arr = [] ;
+                for( let i = 0 ; i < items.length ; i++) {
+                    // 找出放在第一行的
+                    if(i < columns) {
+                        items[i].style.top = 0;
+                        items[i].style.left = (itemWidth + gap ) * i + 'px';
+                        // 获取到第一行的所有高度，存放到数组中，因为在第二行摆列的时候，需要考虑第一行的高度
+                        arr.push(items[i].offsetHeight);
+                    } else {   // 其他行
+                        // 我们首先找到第一行中 高度最小的，上面我们已经把高度放在arr数组中
+                        let minHeight = arr[0];
+                        let index = 0 ; // 用来保存最小值的索引
+                        for( let j = 0 ; j < arr.length ; j++) {
+                            if (minHeight > arr[j]) {
+                                minHeight = arr[j];
+                                index = j ;
+                            }
+                        }
+                        // 设置第二行 （因为已经找到第一行的最小值了）
+                        items[i].style.top = arr[index] + gap + 'px';
+                        items[i].style.left = items[index].offsetLeft + 'px';
+                        // 此时 第一行的最小高度已经改变了，需要修改
+                        arr[index] = arr[index] + items[i].offsetHeight + gap ;
+                    }
+                }
+            }
+            // 监听页面尺寸的变化
+            window.onresize = function () {
+                waterFall();
+            }
+            // 处理当前屏幕宽高
+            function getClient() {
+                return {
+                    width: document.documentElement.clientWidth || document.body.clientWidth ,
+                    height: document.documentElement.clientHeight || document.body.clientHeight
+                }
+            }
+        }
+
+    </script>
+</body>
+</html>
