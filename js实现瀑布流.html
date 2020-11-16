@@ -8,9 +8,10 @@
     * {
         margin: 0;
         padding: 0;
-        position: relative;
+
     }
     #box {
+        position: relative;
         width: 1200px;
         margin: 0 auto;
     }
@@ -21,6 +22,47 @@
     img {
         width: 200px;
         display: block;
+    }
+    .mohu {
+        position: fixed;
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.8);
+        height:100vh;
+        width: 100vw;
+        z-index:10;
+        display: none;
+    }
+    #dialog {
+        width: 600px;
+        height: 600px;
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50% , -50%);
+        z-index: 99;
+        display: none;
+    }
+    #dialog .close {
+        width: 30px;
+        height: 30px;
+        line-height: 30px;
+        border-radius: 5px;
+        text-align: center;
+        font-size: 18px;
+        background: #fff;
+        position: absolute;
+        right: 0;
+        cursor: pointer;
+        user-select: none;
+    }
+    .dialog_img {
+        height: 100%;
+        width: 100%;
+        object-fit: cover;
+        border-radius: 20px;
     }
 </style>
 <body>
@@ -103,21 +145,109 @@
         <div class="item">
             <img src="./img/13.jpg" alt="">
         </div>
+        <div class="item">
+            <img src="./img/01.jpg" alt="">
+        </div>
+        <div class="item">
+            <img src="./img/02.jpg" alt="">
+        </div>
+        <div class="item">
+            <img src="./img/03.jpg" alt="">
+        </div>
+        <div class="item">
+            <img src="./img/04.jpg" alt="">
+        </div>
+        <div class="item">
+            <img src="./img/05.jpg" alt="">
+        </div>
+        <div class="item">
+            <img src="./img/06.jpg" alt="">
+        </div>
+        <div class="item">
+            <img src="./img/07.jpg" alt="">
+        </div>
+        <div class="item">
+            <img src="./img/08.jpg" alt="">
+        </div>
+        <div class="item">
+            <img src="./img/09.jpg" alt="">
+        </div>
+        <div class="item">
+            <img src="./img/10.jpg" alt="">
+        </div>
+        <div class="item">
+            <img src="./img/11.jpg" alt="">
+        </div>
+        <div class="item">
+            <img src="./img/12.jpg" alt="">
+        </div>
+        <div class="item">
+            <img src="./img/13.jpg" alt="">
+        </div>
+        <div class="item">
+            <img src="./img/01.jpg" alt="">
+        </div>
+        <div class="item">
+            <img src="./img/02.jpg" alt="">
+        </div>
+        <div class="item">
+            <img src="./img/03.jpg" alt="">
+        </div>
+        <div class="item">
+            <img src="./img/04.jpg" alt="">
+        </div>
+        <div class="item">
+            <img src="./img/05.jpg" alt="">
+        </div>
+        <div class="item">
+            <img src="./img/06.jpg" alt="">
+        </div>
+        <div class="item">
+            <img src="./img/07.jpg" alt="">
+        </div>
+        <div class="item">
+            <img src="./img/08.jpg" alt="">
+        </div>
+        <div class="item">
+            <img src="./img/09.jpg" alt="">
+        </div>
+        <div class="item">
+            <img src="./img/10.jpg" alt="">
+        </div>
+        <div class="item">
+            <img src="./img/11.jpg" alt="">
+        </div>
+        <div class="item">
+            <img src="./img/12.jpg" alt="">
+        </div>
+        <div class="item">
+            <img src="./img/13.jpg" alt="">
+        </div>
+    </div>
+    </div>
+    <div class="mohu"></div>
+    <div id="dialog">
+        <div class="close">x</div>
+        <img src="" alt="" class="dialog_img">
     </div>
     <script>
         let box = document.getElementById("box");
+        let dialog = document.getElementById("dialog");
+        let mask = document.querySelector(".mohu");
+        let close = document.querySelector(".close");
+        let dialogImg = document.querySelector(".dialog_img");
         let items = box.children;
         // 定义每列之间的间隙  10像素
         let gap = 10 ;
         window.onload = function () {
             waterFall();
-
+            eventLoad();
             function waterFall() {
                 // 计算列数 = 页面大的款第 / 图片的宽度
                 let  pageWidth = getClient().width ;
                 let itemWidth = items[0].offsetWidth;
                 let columns = parseInt( pageWidth / (itemWidth + gap));
-                console.log(columns);
+                // console.log(columns);
                 let arr = [] ;
                 for( let i = 0 ; i < items.length ; i++) {
                     // 找出放在第一行的
@@ -148,15 +278,96 @@
             window.onresize = function () {
                 waterFall();
             }
-            // 处理当前屏幕宽高
-            function getClient() {
-                return {
-                    width: document.documentElement.clientWidth || document.body.clientWidth ,
-                    height: document.documentElement.clientHeight || document.body.clientHeight
+            window.onscroll = function () {
+                let src = [];
+                if(getClient().height + getScrollTop() >= items[items.length - 1].offsetTop) {
+                    ajax("get" , './data/data.json' , {} ,  function (res) {
+                        //let obj = JSON.parse(res);
+                        // console.log(obj);
+                        //data = obj.src;
+                        let { src } = JSON.parse(res)
+                        // console.log(src);
+                        for(let i=0 ;i< src.length ; i++) {
+                            let div = document.createElement('div');
+                            let img = document.createElement("img");
+                            div.className = 'item';
+                            img.setAttribute("src" , src[i]);
+                            div.appendChild(img);
+                            box.appendChild(div);
+                        }
+                        waterFall();
+                    });
                 }
             }
         }
+        // 事件加载函数
+        function eventLoad() {
+            box.addEventListener("click" , showDialog);
+            close.addEventListener("click" , closeDialog);
+        }
+        // 展示弹窗
+        function showDialog(e) {
+            let nowSrc = e.target.getAttribute("src");
+            console.log(nowSrc);
+            dialogImg.setAttribute("src" , nowSrc);
+            dialog.style.display = "block";
+            mask.style.display = "block";
+        }
+        // 关闭弹窗
+        function closeDialog() {
+            this.parentElement.style.display = "none";
+            mask.style.display = "none";
+        }
+        // 处理当前屏幕宽高
+        function getClient() {
+            return {
+                width: document.documentElement.clientWidth || document.body.clientWidth ,
+                height: document.documentElement.clientHeight || document.body.clientHeight
+            }
+        }
+        // 滚动条下来处理 scrollTop
+        function getScrollTop() {
+            return window.pageYOffset || document.documentElement.scrollTop;
+        }
+        // 封装一个 ajax
+        function ajax (type , url , data , callback) {
+            const xhr = XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
 
+            if(typeof data === 'object') {
+                let str = "";
+                for(let key in data) {
+                    str+=`${key}=${data[key]}&`;
+                }
+                data = str.slice(0);
+            }
+
+            type = type.toUpperCase();
+
+            if(type === "GET") {
+                if(data) {
+                    xhr.open("GET" , `${url}?${data}` , true);
+                }else {
+                    xhr.open("GET" , url , true);
+                }
+                xhr.send(null);
+            }else if(type === "POST") {
+                xhr.open("POST" , url  , true) ;
+                xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+                if(data) {
+                    xhr.send(data);
+                }else {
+                    xhr.send(null);
+                }
+            }else {
+                return "error";
+            }
+            xhr.onreadystatechange = function () {
+                if(xhr.readyState === 4 && xhr.status === 200) {
+                    const res = xhr.responseText;
+                    callback(res);
+                }
+            }
+        }
     </script>
 </body>
 </html>
