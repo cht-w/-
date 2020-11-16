@@ -8,7 +8,6 @@
     * {
         margin: 0;
         padding: 0;
-
     }
     #box {
         position: relative;
@@ -40,10 +39,9 @@
         height: 600px;
         position: fixed;
         left: 50%;
-        top: 50%;
-        transform: translate(-50% , -50%);
+        top: -600px;
+        transform: translate(-50%);
         z-index: 99;
-        display: none;
     }
     #dialog .close {
         width: 30px;
@@ -308,14 +306,39 @@
         // 展示弹窗
         function showDialog(e) {
             let nowSrc = e.target.getAttribute("src");
-            console.log(nowSrc);
+            // console.log(nowSrc);
             dialogImg.setAttribute("src" , nowSrc);
-            dialog.style.display = "block";
+            let max = getClient().height - 620;
+            let step = 5 ;
+            let timer = window.setInterval(function() {
+                let curTop = parseFloat(window.getComputedStyle(dialog , null).top );  //一开始为-600px
+                if(curTop + step > max) {
+                    dialog.style.top = curTop + 'px';
+                    window.clearInterval(timer);
+                    return ;
+                }
+                curTop+= step ;
+                // console.log(curTop)
+                dialog.style.top = curTop + 'px';
+            } , 10)
             mask.style.display = "block";
         }
         // 关闭弹窗
         function closeDialog() {
-            this.parentElement.style.display = "none";
+            // this.parentElement.style.display = "none";
+            let max = -(dialog.offsetHeight + dialog.offsetTop) ;
+            let step = -5;
+            // console.log(max);
+            let timer = window.setInterval(function() {
+                let curTop = parseFloat(window.getComputedStyle(dialog , null).top);
+                if(curTop + step <= max) {
+                    dialog.style.top = curTop + 'px';
+                    window.clearInterval(timer);
+                    return ;
+                }
+                curTop+=step;
+                dialog.style.top = curTop + 'px';
+            } , 5)
             mask.style.display = "none";
         }
         // 处理当前屏幕宽高
